@@ -4,7 +4,7 @@ import poc.kafka.AvroDynamicProducer;
 import poc.kafka.AvroProducer;
 import poc.kafka.AvroConsumer;
 
-import java.util.Properties;
+import poc.avro.Config;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
@@ -13,11 +13,13 @@ public class Main {
         // Press Opt+Enter with your caret at the highlighted text to see how
         // IntelliJ IDEA suggests fixing it.
 
-        Properties envProps = new Properties();
+        Config envProps = new Config();
 
-        envProps.put("KafkaIP", "18.191.161.199:9092");
-        envProps.put("KafkaSchemaRegistry", "http://18.191.161.199:8081");
-        envProps.put("KafkaTopic", "avro");
+        envProps.put(Config.PropKeys.KAFKA_IP, "18.191.161.199:9092");
+        envProps.put(Config.PropKeys.KAFKA_SCHEMA_REGISTRY, "http://18.191.161.199:8081");
+        envProps.put(Config.PropKeys.KAKFA_TOPIC, "avro");
+
+        //System.out.println(envProps.get(Config.PropKeys.KAFKA_SCHEMA_REGISTRY));
 
         System.out.println("Producing Avro Message");
         AvroProducer avroProducer = new AvroProducer();

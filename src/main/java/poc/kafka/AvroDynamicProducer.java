@@ -16,24 +16,27 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import poc.http.Client;
+import poc.avro.Config;
 
 public class AvroDynamicProducer {
 
-    public void writeToTopic(Properties envProps) {
+    public void writeToTopic(Config envProps) {
+
+        final String SCHEMA_ENDPOINT = "/subjects/avro-value/versions/latest/schema";
 
         //Set properties for the producer
         Properties producerProps = new Properties();
-        producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, envProps.getProperty("KafkaIP"));
+        producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, envProps.get(Config.PropKeys.KAFKA_IP));
         producerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         producerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        producerProps.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, envProps.getProperty("KafkaSchemaRegistry"));
+        producerProps.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, envProps.get(Config.PropKeys.KAFKA_SCHEMA_REGISTRY));
 
         Producer<String, Object> producer = new KafkaProducer<>(producerProps);
 
         //Create a new Avro schema using a hardcoded schema definition
-        Client httpClient = new Client(envProps.getProperty("KafkaSchemaRegistry"));
+        Client httpClient = new Client(envProps.get(Config.PropKeys.KAFKA_SCHEMA_REGISTRY));
 
-        String userSchemaDefinition = httpClient.get("/subjects/avro-value/versions/latest/schema");
+        String userSchemaDefinition = httpClient.get(SCHEMA_ENDPOINT);
 
         Schema.Parser schemaParser = new Schema.Parser();
         Schema avroSchema = schemaParser.parse(userSchemaDefinition);
@@ -93,7 +96,7 @@ public class AvroDynamicProducer {
 
         System.out.println(avroRecord);
 
-        ProducerRecord<String, Object> producerRecord = new ProducerRecord<>(envProps.getProperty("KafkaTopic"),null,avroRecord);
+        ProducerRecord<String, Object> producerRecord = new ProducerRecord<>(envProps.get(Config.PropKeys.KAKFA_TOPIC),null,avroRecord);
         producer.send(producerRecord);
         producer.flush();
         producer.close();

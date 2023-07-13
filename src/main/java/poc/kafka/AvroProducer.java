@@ -16,17 +16,18 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 
+import poc.avro.Config;
 
 public class AvroProducer {
 
-    public void writeToTopic(Properties envProps) {
+    public void writeToTopic(Config envProps) {
 
         //Set properties for the producer
         Properties producerProps = new Properties();
-        producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, envProps.getProperty("KafkaIP"));
+        producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, envProps.get(Config.PropKeys.KAFKA_IP));
         producerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         producerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        producerProps.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, envProps.getProperty("KafkaSchemaRegistry"));
+        producerProps.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, envProps.get(Config.PropKeys.KAFKA_SCHEMA_REGISTRY));
 
         Producer<String, Object> producer = new KafkaProducer<>(producerProps);
 
@@ -118,7 +119,7 @@ public class AvroProducer {
 
         System.out.println(avroRecord);
 
-        ProducerRecord<String, Object> producerRecord = new ProducerRecord<>(envProps.getProperty("KafkaTopic"),null,avroRecord);
+        ProducerRecord<String, Object> producerRecord = new ProducerRecord<>(envProps.get(Config.PropKeys.KAKFA_TOPIC),null,avroRecord);
         producer.send(producerRecord);
         producer.flush();
         producer.close();
