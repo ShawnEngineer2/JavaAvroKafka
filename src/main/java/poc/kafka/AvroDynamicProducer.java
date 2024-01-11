@@ -33,7 +33,7 @@ public class AvroDynamicProducer {
 
         Producer<String, Object> producer = new KafkaProducer<>(producerProps);
 
-        //Create a new Avro schema using a hardcoded schema definition
+        //Create a new Avro schema from a definition stored in schema registry
         Client httpClient = new Client(envProps.get(Config.PropKeys.KAFKA_SCHEMA_REGISTRY));
 
         String userSchemaDefinition = httpClient.get(SCHEMA_ENDPOINT);
